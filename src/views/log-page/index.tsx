@@ -8,31 +8,40 @@ import styled from "@emotion/styled";
 const { Sider } = Layout;
 
 interface iProps {
-  currentDoc: string,
+  currentDoc: string;
+}
+interface Log {
+  version:string;
+  path:string;
+  name:string;
+  _id:string;
 }
 
 export const LogPage = ({currentDoc}: iProps) => {
   
   const [selectedKey, setSelectedKey] = useState('')
-  const[logList, setLogList] = useState([])
+  const[logList, setLogList] = useState([''])
+
+  const serviceUrl = process.env.REACT_APP_API_URL
 
   useEffect(() => {
-    let myHeaders = new Headers({
-      'Access-Control-Allow-Origin': '*',
-      'Content-Type': 'text/plain'
-    })
     fetch(`/docs/${currentDoc}`,{
-      method: 'GET',
-      headers: myHeaders,
-      mode: 'cors'
+      method: 'GET'
     }).then(async res => {
       const logs = await res.json()
-      setLogList(logs)
+      let list: string[] = []
+      logs.body.forEach((log: Log)=> {
+        list.push(log.version)
+      })
+      setLogList(list)
+      setSelectedKey(list[0])
     })
-  }, [])
+  }, [currentDoc])
 
   const onClickMenu = (e: MenuInfo) => {
     setSelectedKey(String(e.key))
+
+    console.log(selectedKey)
   }
 
   const FrameContainer = styled.div`
@@ -46,21 +55,16 @@ export const LogPage = ({currentDoc}: iProps) => {
     <Layout>
       <Sider style={{height: 'inherit'}}>
         <Menu mode="vertical" style={{ height: '100%'}}  defaultSelectedKeys={[selectedKey]} onClick={onClickMenu} >
-          <Menu.Item key="a">
-            Navigation One
-          </Menu.Item>
-          <Menu.Item key="b">
-            Navigation One
-          </Menu.Item>
-          <Menu.Item key="c">
-            Navigation One
-          </Menu.Item>
+
+          {logList.map(log => {
+            return <Menu.Item key={log}>{currentDoc + " v" + log}</Menu.Item>
+          })}
         </Menu>
 
       </Sider>
       <Content>
         <FrameContainer>
-          <iframe src="http://localhost:3005/docs/chrome/chrome v 80.html" style={{height: '100%', width: '100%'}} title="更新日志"></iframe>
+          <iframe src={`${serviceUrl}/documents/${currentDoc}/${currentDoc} v ${selectedKey}.html`} style={{height: '100%', width: '100%'}} title="更新日志"></iframe>
         </FrameContainer>
       </Content>
     </Layout>
