@@ -25,7 +25,7 @@ export const LogPage = ({currentDoc}: iProps) => {
   const serviceUrl = process.env.REACT_APP_API_URL
 
   useEffect(() => {
-    fetch(`/docs/${currentDoc}`,{
+    fetch(`/api/docs/${currentDoc}`,{
       method: 'GET'
     }).then(async res => {
       const logs = await res.json()

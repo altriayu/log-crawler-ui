@@ -30,7 +30,7 @@ function App() {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'text/plain'
       })
-      fetch(`/docs`,{
+      fetch(`/api/docs`,{
         method: 'GET',
         headers: myHeaders,
         mode: 'cors'
